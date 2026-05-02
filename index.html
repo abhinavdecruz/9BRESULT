@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMMHS Karavaloor - Grade Portal</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --success-color: #27ae60;
+            --bg-color: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 20px;
+        }
+
+        h1 { color: var(--primary-color); margin: 0; }
+        p { color: #666; }
+
+        .controls {
+            display: flex;
+            justify-content:间;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        #searchInput {
+            flex-grow: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover { background-color: #f1f7ff; }
+
+        /* Color Coding for Grades */
+        .grade-aplus { color: #2ecc71; font-weight: bold; }
+        .grade-a { color: #27ae60; font-weight: bold; }
+        .grade-fail { color: #e74c3c; font-weight: bold; }
+
+        @media (max-width: 600px) {
+            .container { padding: 10px; }
+            h1 { font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>AMMHS Karavaloor</h1>
+        <p>Third Term Terminal Evaluation (TE) Grade Summary 2025-26</p>
+    </header>
+
+    <div class="controls">
+        <input type="text" id="searchInput" placeholder="🔍 Search student name..." onkeyup="filterTable()">
+    </div>
+
+    <div class="table-wrapper">
+        <table id="gradeTable">
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>L1-I</th>
+                    <th>L1-II</th>
+                    <th>Eng</th>
+                    <th>Hin</th>
+                    <th>Phy</th>
+                    <th>Che</th>
+                    <th>Bio</th>
+                    <th>Soc</th>
+                    <th>Mat</th>
+                    <th>IT</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- Data injected by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // Student Data Array
+    const students = [
+        { n: "Aarathi A", g: ["A", "B+", "C", "C+", "D+", "D+", "D+", "D+", "D+", "B"] },
+        { n: "Aavani Binulal", g: ["C", "C+", "B", "C+", "D+", "D+", "C", "D+", "D+", "B"] },
+        { n: "Abhimannu M S", g: ["C+", "B", "C", "C", "D+", "D+", "D+", "C+", "D+", "B+"] },
+        { n: "Abhimanue R", g: ["C", "B", "C", "D+", "D+", "D+", "D+", "D+", "D+", "B+"] },
+        { n: "Abhinav Manoj", g: ["C+", "C+", "D+", "D+", "D+", "D+", "D+", "D+", "D+", "B"] },
+        { n: "Adithya B R", g: ["C", "D+", "D+", "C", "D+", "D+", "B", "D+", "D+", "B"] },
+        { n: "Adwaidh S", g: ["C+", "B", "C+", "C", "C", "D+", "C", "D+", "C", "A"] },
+        { n: "Adwaith Raj", g: ["C+", "C", "B", "C+", "C+", "C", "D+", "C+", "D+", "A"] },
+        { n: "Aiswarya Krishna R", g: ["C", "B", "D+", "C", "D+", "D+", "D+", "D+", "C", "B"] },
+        { n: "Alan A", g: ["B+", "B+", "C", "C", "D+", "D+", "D+", "D+", "D+", "B"] },
+        { n: "Alphin Gani", g: ["A", "A", "C+", "C+", "D+", "D+", "C", "B", "C+", "B"] },
+        { n: "Alvin Biju", g: ["A+", "A", "A", "B+", "A", "B", "C+", "C+", "C+", "A"] },
+        { n: "Anandha Lekshmi S", g: ["A+", "A", "B", "B", "B", "D+", "C", "B", "D+", "B"] },
+        { n: "Ananthukrishnan B", g: ["C+", "A", "D+", "C+", "C", "D+", "D+", "D+", "D+", "B"] },
+        { n: "Anashwara Sabu", g: ["A", "B+", "B", "B", "B", "D+", "D+", "C", "D+", "B+"] },
+        { n: "Arjunsree S", g: ["A", "A+", "B+", "B+", "B", "D+", "D+", "D+", "D+", "B+"] },
+        { n: "Arunima M P", g: ["B+", "B+", "B+", "C", "C", "D+", "D+", "D+", "D+", "A"] },
+        { n: "Ashil Alex", g: ["C", "B", "C+", "C", "C", "D+", "D+", "D+", "D+", "B+"] },
+        { n: "Athul Krishnan B", g: ["C+", "C+", "C", "C", "D+", "D+", "D+", "D", "D+", "B"] },
+        { n: "Athulya B Mamachan", g: ["C", "B", "C", "C+", "D+", "D+", "D+", "D+", "D+", "B"] },
+        { n: "Basil Jose", g: ["C", "C", "D+", "C", "D+", "D+", "D+", "D+", "C", "B"] },
+        { n: "Bidhinya R J", g: ["A+", "A+", "B+", "B", "A", "C+", "C", "C+", "B", "B+"] },
+        { n: "Bileejal B", g: ["A", "A+", "B+", "B", "B", "C", "D+", "C", "D+", "B+"] },
+        { n: "Devapriya P S", g: ["A+", "A+", "B+", "B+", "C", "D+", "D+", "C", "D+", "B"] },
+        { n: "Diya R Vijayan", g: ["A+", "A+", "A", "A", "D+", "D+", "C", "C+", "D+", "B"] },
+        { n: "Elsha Sabu", g: ["B+", "B+", "C", "C+", "D+", "D+", "D+", "D+", "D+", "B"] },
+        { n: "Hanna Fathim", g: ["A+", "A+", "B", "B", "D+", "D+", "C", "C", "D+", "B"] },
+        { n: "Irishyanandhatm", g: ["B", "C+", "C+", "C+", "D+", "D+", "D+", "D+", "D+", "B"] },
+        { n: "J B Anurag", g: ["B", "C+", "D+", "C", "D+", "D+", "D+", "D+", "C", "B"] },
+        { n: "Kesiya Shibu Thomas", g: ["B+", "B", "C+", "B+", "D+", "D+", "C", "D+", "D+", "B+"] },
+        { n: "Kshethra Nair S", g: ["A+", "A+", "A", "A+", "A", "C+", "B+", "B", "B+", "B+"] },
+        { n: "Manasa Ratheesh", g: ["B+", "A", "C", "C+", "D+", "D+", "D+", "D+", "D+", "B"] },
+        { n: "Nevin Santhosh", g: ["A+", "A", "C", "B", "C", "C", "C+", "C", "D+", "A"] },
+        { n: "Nripan Ghosh G I", g: ["C+", "A", "C+", "C+", "C", "D+", "D+", "D+", "D+", "B"] },
+        { n: "Ramseena A", g: ["B+", "A+", "C", "C", "D+", "D+", "D+", "D+", "D+", "B"] },
+        { n: "Robson V", g: ["B", "A", "C", "C+", "C+", "D+", "D+", "D+", "D+", "B"] },
+        { n: "Sanuja Sajith", g: ["A", "B", "C+", "C", "D+", "D+", "D+", "D+", "C+", "B"] },
+        { n: "Sayanth S Raj", g: ["A+", "A+", "B+", "A", "B", "C", "B", "B", "B", "A+"] },
+        { n: "Sharon Shajan", g: ["C", "C", "C", "D+", "D+", "D+", "D+", "D+", "C", "B"] },
+        { n: "Shifana S", g: ["A+", "A+", "B+", "B+", "A", "C+", "B", "C+", "D+", "B+"] },
+        { n: "Sreerags D", g: ["A", "A+", "A", "A", "C", "D+", "D+", "B", "D+", "B+"] },
+        { n: "Suryanarayanan S", g: ["C", "C+", "D+", "D+", "D+", "D+", "D+", "D+", "C", "B"] },
+        { n: "Tissa Mathew", g: ["B", "B", "B", "C+", "C", "C", "D+", "D+", "D+", "B+"] },
+        { n: "Vaiga S", g: ["C+", "A", "C+", "C+", "D+", "D+", "D+", "C", "D+", "B"] },
+        { n: "Yadu Lal", g: ["C+", "B+", "C", "C", "D+", "D+", "D+", "C+", "C", "B"] }
+    ];
+
+    function renderTable(data) {
+        const body = document.getElementById('tableBody');
+        body.innerHTML = '';
+        data.forEach(item => {
+            const row = document.createElement('tr');
+            let gradeCells = item.g.map(grade => {
+                let cls = '';
+                if(grade === 'A+') cls = 'grade-aplus';
+                else if(grade === 'A') cls = 'grade-a';
+                else if(grade.includes('D')) cls = 'grade-fail';
+                return `<td class="${cls}">${grade}</td>`;
+            }).join('');
+            
+            row.innerHTML = `<td><strong>${item.n}</strong></td>${gradeCells}`;
+            body.appendChild(row);
+        });
+    }
+
+    function filterTable() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        const filtered = students.filter(s => s.n.toLowerCase().includes(query));
+        renderTable(filtered);
+    }
+
+    // Initial load
+    renderTable(students);
+</script>
+
+</body>
+</html>
