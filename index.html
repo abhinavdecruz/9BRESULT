@@ -3,208 +3,205 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AMMHS Karavaloor - Grade Portal</title>
+    <title>AMMHS Karavaloor | Result Portal</title>
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --accent-color: #3498db;
-            --success-color: #27ae60;
-            --bg-color: #f8f9fa;
+            --primary: #1a2a6c;
+            --secondary: #b21f1f;
+            --accent: #fdbb2d;
+            --glass: rgba(255, 255, 255, 0.95);
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin: 0;
             padding: 20px;
-            color: #333;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid var(--bg-color);
-            padding-bottom: 20px;
-        }
-
-        h1 { color: var(--primary-color); margin: 0; }
-        p { color: #666; }
-
-        .controls {
-            display: flex;
-            justify-content:间;
-            margin-bottom: 20px;
-            gap: 10px;
-        }
-
-        #searchInput {
-            flex-grow: 1;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 16px;
-        }
-
-        .table-wrapper {
-            overflow-x: auto;
-        }
-
-        table {
+        .card {
+            background: var(--glass);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
             width: 100%;
-            border-collapse: collapse;
-            min-width: 800px;
+            max-width: 500px;
+            transition: all 0.3s ease;
         }
 
-        th {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 15px;
-            text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
-            position: sticky;
-            top: 0;
-        }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { margin: 0; color: var(--primary); font-size: 24px; }
+        .header p { color: #666; font-size: 14px; margin-top: 5px; }
 
-        td {
+        .input-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; }
+        input {
+            width: 100%;
             padding: 12px;
-            text-align: center;
-            border-bottom: 1px solid #eee;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus { border-color: var(--accent); outline: none; }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+        }
+        button:hover { background: #0f1a4a; transform: translateY(-2px); }
+
+        #resultArea { margin-top: 30px; display: none; animation: fadeIn 0.5s; }
+        
+        .result-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .result-table th, .result-table td { 
+            padding: 12px; border: 1px solid #eee; text-align: left; 
+        }
+        .result-table th { background: #f8f9fa; }
+
+        .grade-pill {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            background: #eee;
         }
 
-        tr:hover { background-color: #f1f7ff; }
+        .error { color: #b21f1f; text-align: center; font-weight: bold; display: none; }
 
-        /* Color Coding for Grades */
-        .grade-aplus { color: #2ecc71; font-weight: bold; }
-        .grade-a { color: #27ae60; font-weight: bold; }
-        .grade-fail { color: #e74c3c; font-weight: bold; }
-
-        @media (max-width: 600px) {
-            .container { padding: 10px; }
-            h1 { font-size: 20px; }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h1>AMMHS Karavaloor</h1>
-        <p>Third Term Terminal Evaluation (TE) Grade Summary 2025-26</p>
-    </header>
-
-    <div class="controls">
-        <input type="text" id="searchInput" placeholder="🔍 Search student name..." onkeyup="filterTable()">
+<div class="card">
+    <div class="header">
+        <h1>AMMHS KARAVALOOR</h1>
+        <p>Terminal Evaluation (TE) Result 2025-26</p>
     </div>
 
-    <div class="table-wrapper">
-        <table id="gradeTable">
+    <div id="loginForm">
+        <div class="input-group">
+            <label>Roll Number</label>
+            <input type="number" id="rollNo" placeholder="Enter Roll No (1-45)">
+        </div>
+        <div class="input-group">
+            <label>Date of Birth</label>
+            <input type="text" id="dob" placeholder="DD/MM/YYYY">
+        </div>
+        <button onclick="checkResult()">Check Result</button>
+        <p id="errorMsg" class="error">Invalid Roll Number or Date of Birth!</p>
+    </div>
+
+    <div id="resultArea">
+        <h2 id="studentName" style="color: var(--primary); text-align: center; margin-bottom: 5px;"></h2>
+        <p id="studentRoll" style="text-align: center; margin-top: 0; color: #777;"></p>
+        
+        <table class="result-table">
             <thead>
-                <tr>
-                    <th>Student Name</th>
-                    <th>L1-I</th>
-                    <th>L1-II</th>
-                    <th>Eng</th>
-                    <th>Hin</th>
-                    <th>Phy</th>
-                    <th>Che</th>
-                    <th>Bio</th>
-                    <th>Soc</th>
-                    <th>Mat</th>
-                    <th>IT</th>
-                </tr>
+                <tr><th>Subject</th><th>Grade</th></tr>
             </thead>
-            <tbody id="tableBody">
-                <!-- Data injected by JavaScript -->
-            </tbody>
+            <tbody id="gradeRows"></tbody>
         </table>
+        <button style="margin-top: 20px; background: #666;" onclick="location.reload()">Back</button>
     </div>
 </div>
 
 <script>
-    // Student Data Array
-    const students = [
-        { n: "Aarathi A", g: ["A", "B+", "C", "C+", "D+", "D+", "D+", "D+", "D+", "B"] },
-        { n: "Aavani Binulal", g: ["C", "C+", "B", "C+", "D+", "D+", "C", "D+", "D+", "B"] },
-        { n: "Abhimannu M S", g: ["C+", "B", "C", "C", "D+", "D+", "D+", "C+", "D+", "B+"] },
-        { n: "Abhimanue R", g: ["C", "B", "C", "D+", "D+", "D+", "D+", "D+", "D+", "B+"] },
-        { n: "Abhinav Manoj", g: ["C+", "C+", "D+", "D+", "D+", "D+", "D+", "D+", "D+", "B"] },
-        { n: "Adithya B R", g: ["C", "D+", "D+", "C", "D+", "D+", "B", "D+", "D+", "B"] },
-        { n: "Adwaidh S", g: ["C+", "B", "C+", "C", "C", "D+", "C", "D+", "C", "A"] },
-        { n: "Adwaith Raj", g: ["C+", "C", "B", "C+", "C+", "C", "D+", "C+", "D+", "A"] },
-        { n: "Aiswarya Krishna R", g: ["C", "B", "D+", "C", "D+", "D+", "D+", "D+", "C", "B"] },
-        { n: "Alan A", g: ["B+", "B+", "C", "C", "D+", "D+", "D+", "D+", "D+", "B"] },
-        { n: "Alphin Gani", g: ["A", "A", "C+", "C+", "D+", "D+", "C", "B", "C+", "B"] },
-        { n: "Alvin Biju", g: ["A+", "A", "A", "B+", "A", "B", "C+", "C+", "C+", "A"] },
-        { n: "Anandha Lekshmi S", g: ["A+", "A", "B", "B", "B", "D+", "C", "B", "D+", "B"] },
-        { n: "Ananthukrishnan B", g: ["C+", "A", "D+", "C+", "C", "D+", "D+", "D+", "D+", "B"] },
-        { n: "Anashwara Sabu", g: ["A", "B+", "B", "B", "B", "D+", "D+", "C", "D+", "B+"] },
-        { n: "Arjunsree S", g: ["A", "A+", "B+", "B+", "B", "D+", "D+", "D+", "D+", "B+"] },
-        { n: "Arunima M P", g: ["B+", "B+", "B+", "C", "C", "D+", "D+", "D+", "D+", "A"] },
-        { n: "Ashil Alex", g: ["C", "B", "C+", "C", "C", "D+", "D+", "D+", "D+", "B+"] },
-        { n: "Athul Krishnan B", g: ["C+", "C+", "C", "C", "D+", "D+", "D+", "D", "D+", "B"] },
-        { n: "Athulya B Mamachan", g: ["C", "B", "C", "C+", "D+", "D+", "D+", "D+", "D+", "B"] },
-        { n: "Basil Jose", g: ["C", "C", "D+", "C", "D+", "D+", "D+", "D+", "C", "B"] },
-        { n: "Bidhinya R J", g: ["A+", "A+", "B+", "B", "A", "C+", "C", "C+", "B", "B+"] },
-        { n: "Bileejal B", g: ["A", "A+", "B+", "B", "B", "C", "D+", "C", "D+", "B+"] },
-        { n: "Devapriya P S", g: ["A+", "A+", "B+", "B+", "C", "D+", "D+", "C", "D+", "B"] },
-        { n: "Diya R Vijayan", g: ["A+", "A+", "A", "A", "D+", "D+", "C", "C+", "D+", "B"] },
-        { n: "Elsha Sabu", g: ["B+", "B+", "C", "C+", "D+", "D+", "D+", "D+", "D+", "B"] },
-        { n: "Hanna Fathim", g: ["A+", "A+", "B", "B", "D+", "D+", "C", "C", "D+", "B"] },
-        { n: "Irishyanandhatm", g: ["B", "C+", "C+", "C+", "D+", "D+", "D+", "D+", "D+", "B"] },
-        { n: "J B Anurag", g: ["B", "C+", "D+", "C", "D+", "D+", "D+", "D+", "C", "B"] },
-        { n: "Kesiya Shibu Thomas", g: ["B+", "B", "C+", "B+", "D+", "D+", "C", "D+", "D+", "B+"] },
-        { n: "Kshethra Nair S", g: ["A+", "A+", "A", "A+", "A", "C+", "B+", "B", "B+", "B+"] },
-        { n: "Manasa Ratheesh", g: ["B+", "A", "C", "C+", "D+", "D+", "D+", "D+", "D+", "B"] },
-        { n: "Nevin Santhosh", g: ["A+", "A", "C", "B", "C", "C", "C+", "C", "D+", "A"] },
-        { n: "Nripan Ghosh G I", g: ["C+", "A", "C+", "C+", "C", "D+", "D+", "D+", "D+", "B"] },
-        { n: "Ramseena A", g: ["B+", "A+", "C", "C", "D+", "D+", "D+", "D+", "D+", "B"] },
-        { n: "Robson V", g: ["B", "A", "C", "C+", "C+", "D+", "D+", "D+", "D+", "B"] },
-        { n: "Sanuja Sajith", g: ["A", "B", "C+", "C", "D+", "D+", "D+", "D+", "C+", "B"] },
-        { n: "Sayanth S Raj", g: ["A+", "A+", "B+", "A", "B", "C", "B", "B", "B", "A+"] },
-        { n: "Sharon Shajan", g: ["C", "C", "C", "D+", "D+", "D+", "D+", "D+", "C", "B"] },
-        { n: "Shifana S", g: ["A+", "A+", "B+", "B+", "A", "C+", "B", "C+", "D+", "B+"] },
-        { n: "Sreerags D", g: ["A", "A+", "A", "A", "C", "D+", "D+", "B", "D+", "B+"] },
-        { n: "Suryanarayanan S", g: ["C", "C+", "D+", "D+", "D+", "D+", "D+", "D+", "C", "B"] },
-        { n: "Tissa Mathew", g: ["B", "B", "B", "C+", "C", "C", "D+", "D+", "D+", "B+"] },
-        { n: "Vaiga S", g: ["C+", "A", "C+", "C+", "D+", "D+", "D+", "C", "D+", "B"] },
-        { n: "Yadu Lal", g: ["C+", "B+", "C", "C", "D+", "D+", "D+", "C+", "C", "B"] }
+    const subjects = ["First Lang I", "First Lang II", "English", "Hindi", "Physics", "Chemistry", "Biology", "Social Science", "Mathematics", "IT"];
+    
+    // Processed Data
+    const rawData = [
+        { n: "Aarathi A", d: "08/11/2011", g: ["A", "B+", "C", "C+", "D+", "D+", "D+", "D+", "D+", "B"] },
+        { n: "Aavani Binulal", d: "03/05/2011", g: ["C", "C+", "B", "C+", "D+", "D+", "C", "D+", "D+", "B"] },
+        { n: "Abhimannu M S", d: "13/04/2011", g: ["C+", "B", "C", "C", "D+", "D+", "D+", "C+", "D+", "B+"] },
+        { n: "Abhimanue R", d: "29/04/2011", g: ["C", "B", "C", "D+", "D+", "D+", "D+", "D+", "D+", "B+"] },
+        { n: "Abhinav Manoj", d: "10/10/2011", g: ["C+", "C+", "D+", "D+", "D+", "D+", "D+", "D+", "D+", "B"] },
+        { n: "Adithya B R", d: "29/09/2011", g: ["C", "D+", "D+", "C", "D+", "D+", "B", "D+", "D+", "B"] },
+        { n: "Adwaidh S", d: "23/03/2011", g: ["C+", "B", "C+", "C", "C", "D+", "C", "D+", "C", "A"] },
+        { n: "Adwaith Raj", d: "13/05/2011", g: ["C+", "C", "B", "C+", "C+", "C", "D+", "C+", "D+", "A"] },
+        { n: "Aiswarya Krishna R", d: "20/06/2011", g: ["C", "B", "D+", "C", "D+", "D+", "D+", "D+", "C", "B"] },
+        { n: "Alan A", d: "09/01/2011", g: ["B+", "B+", "C", "C", "D+", "D+", "D+", "D+", "D+", "B"] },
+        { n: "Alphin Gani", d: "12/11/2010", g: ["A", "A", "C+", "C+", "D+", "D+", "C", "B", "C+", "B"] },
+        { n: "Alvin Biju", d: "07/05/2011", g: ["A+", "A", "A", "B+", "A", "B", "C+", "C+", "C+", "A"] },
+        { n: "Anandha Lekshmi S", d: "31/07/2011", g: ["A+", "A", "B", "B", "B", "D+", "C", "B", "D+", "B"] },
+        { n: "Ananthukrishnan B", d: "15/04/2011", g: ["C+", "A", "D+", "C+", "C", "D+", "D+", "D+", "D+", "B"] },
+        { n: "Anashwara Sabu", d: "09/03/2012", g: ["A", "B+", "B", "B", "B", "D+", "D+", "C", "D+", "B+"] },
+        { n: "Arjunsree S", d: "02/11/2011", g: ["A", "A+", "B+", "B+", "B", "D+", "D+", "D+", "D+", "B+"] },
+        { n: "Arunima M P", d: "15/08/2011", g: ["B+", "B+", "B+", "C", "C", "D+", "D+", "D+", "D+", "A"] },
+        { n: "Ashil Alex", d: "24/11/2011", g: ["C", "B", "C+", "C", "C", "D+", "D+", "D+", "D+", "B+"] },
+        { n: "Athul Krishnan B", d: "07/08/2011", g: ["C+", "C+", "C", "C", "D+", "D+", "D+", "D", "D+", "B"] },
+        { n: "Athulya B Mamachan", d: "25/07/2011", g: ["C", "B", "C", "C+", "D+", "D+", "D+", "D+", "D+", "B"] },
+        { n: "Basil Jose", d: "03/03/2011", g: ["C", "C", "D+", "C", "D+", "D+", "D+", "D+", "C", "B"] },
+        { n: "Bidhinya R J", d: "21/09/2011", g: ["A+", "A+", "B+", "B", "A", "C+", "C", "C+", "B", "B+"] },
+        { n: "Bileejal B", d: "03/01/2012", g: ["A", "A+", "B+", "B", "B", "C", "D+", "C", "D+", "B+"] },
+        { n: "Devapriya P S", d: "25/11/2011", g: ["A+", "A+", "B+", "B+", "C", "D+", "D+", "C", "D+", "B"] },
+        { n: "Diya R Vijayan", d: "20/10/2011", g: ["A+", "A+", "A", "A", "D+", "D+", "C", "C+", "D+", "B"] },
+        { n: "Elsha Sabu", d: "17/08/2011", g: ["B+", "B+", "C", "C+", "D+", "D+", "D+", "D+", "D+", "B"] },
+        { n: "Hanna Fathim", d: "18/06/2011", g: ["A+", "A+", "B", "B", "D+", "D+", "C", "C", "D+", "B"] },
+        { n: "Irishyanandhatm", d: "02/03/2010", g: ["B", "C+", "C+", "C+", "D+", "D+", "D+", "D+", "D+", "B"] },
+        { n: "J B Anurag", d: "12/11/2011", g: ["B", "C+", "D+", "C", "D+", "D+", "D+", "D+", "C", "B"] },
+        { n: "Kesiya Shibu Thomas", d: "24/03/2011", g: ["B+", "B", "C+", "B+", "D+", "D+", "C", "D+", "D+", "B+"] },
+        { n: "Kshethra Nair S", d: "25/11/2011", g: ["A+", "A+", "A", "A+", "A", "C+", "B+", "B", "B+", "B+"] },
+        { n: "Manasa Ratheesh", d: "02/03/2012", g: ["B+", "A", "C", "C+", "D+", "D+", "D+", "D+", "D+", "B"] },
+        { n: "Nevin Santhosh", d: "16/04/2011", g: ["A+", "A", "C", "B", "C", "C", "C+", "C", "D+", "A"] },
+        { n: "Nripan Ghosh G I", d: "20/08/2011", g: ["C+", "A", "C+", "C+", "C", "D+", "D+", "D+", "D+", "B"] },
+        { n: "Ramseena A", d: "28/05/2011", g: ["B+", "A+", "C", "C", "D+", "D+", "D+", "D+", "D+", "B"] },
+        { n: "Robson V", d: "14/09/2010", g: ["B", "A", "C", "C+", "C+", "D+", "D+", "D+", "D+", "B"] },
+        { n: "Sanuja Sajith", d: "06/05/2011", g: ["A", "B", "C+", "C", "D+", "D+", "D+", "D+", "C+", "B"] },
+        { n: "Sayanth S Raj", d: "16/04/2011", g: ["A+", "A+", "B+", "A", "B", "C", "B", "B", "B", "A+"] },
+        { n: "Sharon Shajan", d: "25/02/2011", g: ["C", "C", "C", "D+", "D+", "D+", "D+", "D+", "C", "B"] },
+        { n: "Shifana S", d: "07/09/2010", g: ["A+", "A+", "B+", "B+", "A", "C+", "B", "C+", "D+", "B+"] },
+        { n: "Sreerags D", d: "18/02/2011", g: ["A", "A+", "A", "A", "C", "D+", "D+", "B", "D+", "B+"] },
+        { n: "Suryanarayanan S", d: "30/05/2011", g: ["C", "C+", "D+", "D+", "D+", "D+", "D+", "D+", "C", "B"] },
+        { n: "Tissa Mathew", d: "10/03/2011", g: ["B", "B", "B", "C+", "C", "C", "D+", "D+", "D+", "B+"] },
+        { n: "Vaiga S", d: "17/11/2011", g: ["C+", "A", "C+", "C+", "D+", "D+", "D+", "C", "D+", "B"] },
+        { n: "Yadu Lal", d: "28/02/2011", g: ["C+", "B+", "C", "C", "D+", "D+", "D+", "C+", "C", "B"] }
     ];
 
-    function renderTable(data) {
-        const body = document.getElementById('tableBody');
-        body.innerHTML = '';
-        data.forEach(item => {
-            const row = document.createElement('tr');
-            let gradeCells = item.g.map(grade => {
-                let cls = '';
-                if(grade === 'A+') cls = 'grade-aplus';
-                else if(grade === 'A') cls = 'grade-a';
-                else if(grade.includes('D')) cls = 'grade-fail';
-                return `<td class="${cls}">${grade}</td>`;
-            }).join('');
-            
-            row.innerHTML = `<td><strong>${item.n}</strong></td>${gradeCells}`;
-            body.appendChild(row);
+    function checkResult() {
+        const roll = parseInt(document.getElementById('rollNo').value);
+        const dobInput = document.getElementById('dob').value.trim();
+        const error = document.getElementById('errorMsg');
+
+        // Validation
+        if (roll >= 1 && roll <= rawData.length) {
+            const student = rawData[roll - 1];
+            if (student.d === dobInput) {
+                showResult(student, roll);
+                error.style.display = 'none';
+                return;
+            }
+        }
+        error.style.display = 'block';
+    }
+
+    function showResult(student, roll) {
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('resultArea').style.display = 'block';
+        document.getElementById('studentName').innerText = student.n;
+        document.getElementById('studentRoll').innerText = "Roll No: " + roll;
+
+        const tbody = document.getElementById('gradeRows');
+        tbody.innerHTML = '';
+        
+        student.g.forEach((grade, index) => {
+            const row = `<tr><td>${subjects[index]}</td><td><span class="grade-pill">${grade}</span></td></tr>`;
+            tbody.innerHTML += row;
         });
     }
-
-    function filterTable() {
-        const query = document.getElementById('searchInput').value.toLowerCase();
-        const filtered = students.filter(s => s.n.toLowerCase().includes(query));
-        renderTable(filtered);
-    }
-
-    // Initial load
-    renderTable(students);
 </script>
-
 </body>
 </html>
